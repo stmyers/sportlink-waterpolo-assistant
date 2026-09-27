@@ -16,3 +16,4 @@ Thumbs.db
 
 # Archives (uncomment if you don't want to track zip releases)
 # *.zip
+dist/
