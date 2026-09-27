@@ -177,7 +177,7 @@
         <div class="sl-wp-header">
           <div class="sl-wp-title">
             <span class="sl-wp-title-icon">🤽</span>
-            <span id="sl-wp-modal-title">Sportlink Waterpolo Assistant</span> <span id="sl-wp-header-version" style="font-size:11px;font-weight:normal;color:#94a3b8;cursor:pointer;padding:2px 6px;border-radius:4px;background:#f1f5f9;" title="Click to copy diagnostic info">v1.1.0</span>
+            <span id="sl-wp-modal-title">Sportlink Waterpolo Assistant</span> <span id="sl-wp-header-version" style="font-size:11px;font-weight:normal;color:#94a3b8;cursor:pointer;padding:2px 6px;border-radius:4px;background:#f1f5f9;" title="Click to copy diagnostic info">v1.1.1</span>
           </div>
           <button class="sl-wp-close-btn" id="sl-wp-close" title="Close (Esc)">✕</button>
         </div>
@@ -225,7 +225,7 @@
     if (verBtn) {
       verBtn.addEventListener('click', () => {
         const diag = {
-          version: '1.1.0',
+          version: '1.1.1',
           timestamp: new Date().toISOString(),
           url: window.location.href,
           hasToken: Boolean(getActiveToken()),
@@ -363,6 +363,8 @@
           parsedTeams.push({ teamId, name });
         }
       }
+
+      parsedTeams.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' }));
 
       deMeeuwenTeams = parsedTeams;
       return deMeeuwenTeams;
@@ -848,6 +850,13 @@
         allMatches.push({ match: m, poolId: c.PublicPoolId, compDesc: c.ClassDescription || c.CompetitionTypeName });
       });
     }
+
+    allMatches.sort((a, b) => {
+      const dateA = a.match.MatchDate || '';
+      const dateB = b.match.MatchDate || '';
+      if (dateA !== dateB) return dateA.localeCompare(dateB);
+      return (a.match.MatchTime || '').localeCompare(b.match.MatchTime || '');
+    });
 
     if (allMatches.length === 0) {
       container.innerHTML = `<div style="color: #64748b; padding: 10px;">No scheduled matches found for this team.</div>`;
