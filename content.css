@@ -1,0 +1,769 @@
+/* Sportlink Waterpolo Assistant - Scoped Styles */
+
+#sl-wp-launcher-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 2147483640;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  color: #ffffff;
+  padding: 10px 18px;
+  border-radius: 9999px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.4), 0 2px 6px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+
+#sl-wp-launcher-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(2, 132, 199, 0.5), 0 3px 8px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(135deg, #0369a1 0%, #075985 100%);
+}
+
+#sl-wp-launcher-btn:active {
+  transform: translateY(0);
+}
+
+#sl-wp-launcher-btn .sl-wp-badge {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+}
+
+/* Modal Overlay */
+#sl-wp-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483645;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 50px 16px 40px;
+  overflow-y: auto;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: #1e293b;
+  box-sizing: border-box;
+}
+
+#sl-wp-overlay.sl-wp-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Modal Window */
+#sl-wp-modal {
+  background: #ffffff;
+  width: 100%;
+  max-width: 720px;
+  border-radius: 16px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  transform: scale(0.96) translateY(-10px);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+#sl-wp-overlay.sl-wp-visible #sl-wp-modal {
+  transform: scale(1) translateY(0);
+}
+
+/* Header & Tabs */
+.sl-wp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.sl-wp-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.sl-wp-title-icon {
+  font-size: 20px;
+}
+
+.sl-wp-close-btn {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  color: #64748b;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+
+.sl-wp-close-btn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+/* Tab Navigation */
+.sl-wp-nav-tabs {
+  display: flex;
+  background: #f1f5f9;
+  padding: 4px 16px;
+  gap: 8px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.sl-wp-tab-btn {
+  background: transparent;
+  border: none;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sl-wp-tab-btn:hover {
+  color: #0f172a;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.sl-wp-tab-btn.sl-wp-tab-active {
+  background: #ffffff;
+  color: #0284c7;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* Search Box Container */
+.sl-wp-search-bar {
+  padding: 14px 20px;
+  background: #ffffff;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+}
+
+.sl-wp-search-icon {
+  color: #94a3b8;
+  font-size: 18px;
+}
+
+.sl-wp-input {
+  flex: 1;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 11px 14px;
+  font-size: 14px;
+  color: #0f172a;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.sl-wp-input:focus {
+  border-color: #0284c7;
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+}
+
+.sl-wp-clear-btn {
+  position: absolute;
+  right: 32px;
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 16px;
+  cursor: pointer;
+  display: none;
+  padding: 4px;
+}
+
+.sl-wp-clear-btn:hover {
+  color: #475569;
+}
+
+/* Recent Searches bar */
+.sl-wp-recents {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 20px 10px;
+  font-size: 12px;
+  color: #64748b;
+  flex-wrap: wrap;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.sl-wp-recent-tag {
+  background: #f1f5f9;
+  color: #334155;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-weight: 500;
+}
+
+.sl-wp-recent-tag:hover {
+  background: #e2e8f0;
+  color: #0284c7;
+}
+
+/* Body / Results */
+.sl-wp-body {
+  padding: 20px;
+  max-height: 65vh;
+  overflow-y: auto;
+}
+
+/* Loading Spinner */
+.sl-wp-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 40px 20px;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.sl-wp-spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid #e2e8f0;
+  border-top-color: #0284c7;
+  border-radius: 50%;
+  animation: sl-wp-spin 0.8s linear infinite;
+}
+
+@keyframes sl-wp-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Matching Clubs List */
+.sl-wp-club-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sl-wp-club-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  background: #ffffff;
+}
+
+.sl-wp-club-item:hover, .sl-wp-club-item.sl-wp-selected {
+  border-color: #0284c7;
+  background: #f0f9ff;
+  transform: translateX(2px);
+}
+
+.sl-wp-club-meta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.sl-wp-club-logo {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  border-radius: 6px;
+  background: #f8fafc;
+  padding: 2px;
+  border: 1px solid #e2e8f0;
+}
+
+.sl-wp-club-name {
+  font-weight: 600;
+  font-size: 15px;
+  color: #0f172a;
+}
+
+.sl-wp-club-city {
+  font-size: 13px;
+  color: #64748b;
+}
+
+.sl-wp-club-id {
+  font-size: 12px;
+  font-family: monospace;
+  background: #f1f5f9;
+  color: #475569;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+/* Detail View */
+.sl-wp-details-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e2e8f0;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.sl-wp-club-hero {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.sl-wp-club-hero-logo {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+}
+
+.sl-wp-hero-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.sl-wp-hero-sub {
+  font-size: 13px;
+  color: #64748b;
+}
+
+.sl-wp-btn-summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #0284c7;
+  color: #ffffff;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: none;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.sl-wp-btn-summary:hover {
+  background: #0369a1;
+}
+
+/* Featured Waterpolo Contact Card */
+.sl-wp-card-featured {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border: 1.5px solid #7dd3fc;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 6px -1px rgba(2, 132, 199, 0.08);
+}
+
+.sl-wp-badge-featured {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #0284c7;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+}
+
+.sl-wp-official-name {
+  font-size: 17px;
+  font-weight: 700;
+  color: #0369a1;
+  margin-bottom: 4px;
+}
+
+.sl-wp-official-role {
+  font-size: 13px;
+  color: #475569;
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+.sl-wp-contact-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sl-wp-contact-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 14px;
+}
+
+.sl-wp-contact-val {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #1e293b;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sl-wp-action-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sl-wp-btn-action {
+  background: #f1f5f9;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.15s ease;
+}
+
+.sl-wp-btn-action:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.sl-wp-btn-action.sl-wp-whatsapp {
+  background: #22c55e;
+  border-color: #16a34a;
+  color: #ffffff;
+}
+
+.sl-wp-btn-action.sl-wp-whatsapp:hover {
+  background: #16a34a;
+}
+
+/* Facility / Pool Card */
+.sl-wp-card-facility {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 14px 18px;
+  margin-bottom: 16px;
+}
+
+.sl-wp-facility-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 8px;
+}
+
+.sl-wp-facility-address {
+  font-size: 13px;
+  color: #475569;
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+
+/* Head-to-Head Matches Card */
+.sl-wp-card-matches {
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.sl-wp-matches-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 12px;
+}
+
+.sl-wp-match-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  gap: 12px;
+}
+
+.sl-wp-match-teams {
+  font-weight: 600;
+  font-size: 14px;
+  color: #0f172a;
+}
+
+.sl-wp-match-meta {
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+.sl-wp-btn-reschedule {
+  background: #0284c7;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.15s ease;
+}
+
+.sl-wp-btn-reschedule:hover {
+  background: #0369a1;
+}
+
+/* Reschedule View & Date Finder */
+.sl-wp-reschedule-view {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sl-wp-target-match-card {
+  background: #f0f9ff;
+  border: 1.5px solid #0284c7;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.sl-wp-free-slots-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 700;
+  font-size: 15px;
+  color: #0f172a;
+}
+
+.sl-wp-slot-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  transition: all 0.15s ease;
+}
+
+.sl-wp-slot-item:hover {
+  border-color: #0284c7;
+  background: #f8fafc;
+}
+
+.sl-wp-slot-item.sl-wp-home-pool {
+  border-left: 4px solid #10b981;
+}
+
+.sl-wp-slot-date {
+  font-weight: 600;
+  font-size: 14px;
+  color: #0f172a;
+}
+
+.sl-wp-slot-badge {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-weight: 600;
+}
+
+.sl-wp-badge-free {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.sl-wp-badge-pool {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.sl-wp-proposal-box {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 14px;
+  margin-top: 10px;
+}
+
+.sl-wp-proposal-text {
+  width: 100%;
+  height: 120px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 10px;
+  font-family: inherit;
+  font-size: 13px;
+  resize: vertical;
+  box-sizing: border-box;
+  background: #ffffff;
+  color: #1e293b;
+  margin-bottom: 10px;
+}
+
+/* Collapsible all officials section */
+.sl-wp-accordion-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  user-select: none;
+  transition: all 0.15s ease;
+}
+
+.sl-wp-accordion-header:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.sl-wp-accordion-content {
+  display: none;
+  padding-top: 10px;
+}
+
+.sl-wp-accordion-content.sl-wp-open {
+  display: block;
+}
+
+.sl-wp-all-officials-filter {
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 13px;
+  margin-bottom: 10px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.sl-wp-all-officials-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.sl-wp-official-compact-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+  border: 1px solid #f1f5f9;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 13px;
+}
+
+.sl-wp-official-compact-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.sl-wp-official-compact-name {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.sl-wp-official-compact-func {
+  font-size: 12px;
+  color: #64748b;
+}
+
+/* Toast notifications */
+#sl-wp-toast {
+  position: fixed;
+  bottom: 84px;
+  right: 24px;
+  z-index: 2147483647;
+  background: #0f172a;
+  color: #ffffff;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+#sl-wp-toast.sl-wp-show {
+  opacity: 1;
+  transform: translateY(0);
+}

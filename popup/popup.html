@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sportlink Waterpolo Assistant</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup-container">
+    <div class="popup-header">
+      <div class="popup-title">
+        <span class="popup-icon">🤽</span>
+        <span>Waterpolo Quick Lookup</span>
+      </div>
+    </div>
+
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="popup-search-input" placeholder="Search club (e.g. Otters, Het Y)..." autofocus autocomplete="off" />
+      <button id="popup-clear-btn" class="clear-btn">✕</button>
+    </div>
+
+    <div id="popup-recents-bar" class="recents-bar" style="display: none;">
+      <span>Recent:</span>
+      <div id="popup-recents-chips" class="recents-chips"></div>
+    </div>
+
+    <div id="popup-content" class="popup-content">
+      <div class="empty-state">
+        <div class="empty-icon">🤽</div>
+        <div class="empty-text">Type a club name to find waterpolo secretaries, phone numbers & pools.</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="popup-toast" class="popup-toast"></div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
