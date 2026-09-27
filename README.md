@@ -1,63 +1,88 @@
 # 🤽 Sportlink Waterpolo Assistant
 
-A lightweight Chrome Extension built for waterpolo secretaries (*wedstrijdsecretarissen*) to bypass the clunky Sportlink Club portal and look up opposing club contacts and pool locations in 2 seconds.
+A lightweight, zero-dependency Chrome Extension (Manifest V3) built for water polo match secretaries (*wedstrijdsecretarissen*) to bypass the clunky Sportlink Club portal. Look up opposing club contacts, pools, and find open reschedule dates in seconds.
 
 ---
 
 ## ✨ Features
 
-- **⚡ Instant Opponent Search:** Type a club name (e.g. *Otters*, *Het Y*, *De Dolfijn*) and hit Enter—no navigating through menus.
-- **🥇 Waterpolo Contact Highlighting:** Automatically scans all club officials and highlights the official **Contactperson waterpolo** at the very top.
-- **📋 1-Click Copy:**
-  - **Copy Email** (`wp-secr@...`) with visual checkmark feedback + direct `mailto:` link.
-  - **Copy Mobile** (`06-...`) + direct **WhatsApp Web** link (automatically formats Dutch numbers to `+316...`).
+- **⚡ Instant Opponent Search:** Type a club name (e.g. *Otters*, *Het Y*, *Sassenheim*) and hit Enter—no navigating through nested menus.
+- **🥇 Waterpolo Contact Highlighting:** Automatically scans all club officials and highlights the official **Contactperson waterpolo** with 1-click email and phone copying.
 - **🏊 Swimming Pool Details:** Surfaces the match pool name (*bv. Sportcentrum De Zandzee*), address, and direct **Google Maps** link.
-- **💬 1-Click WhatsApp Summary:** Generates and copies a preformatted message ready to paste directly into your team or coaches' WhatsApp chat:
-  ```text
-  🤽 De Otters Het Gooi (BUSSUM)
-  🏊 Zwembad: Sportcentrum De Zandzee, Struikheiweg 14, 1406 TK BUSSUM
-  📞 Tel bad: 035-6933554
-
-  👤 Contactpersoon waterpolo: Posno - van der Zwaan, P.E.J.M
-  ✉️ wp-secr@deottershetgooi.nl
-  📱 06-24866524
-  ```
-- **🕒 Recent Searches:** Remembers recently searched clubs so frequent opponents can be re-opened with a single click.
-- **👥 Full Officials Fallback:** Easily expand to view and filter all other club officials (chairperson, general secretary, swimming officials).
-- **⌨️ Keyboard Shortcut:** Press `Ctrl+Shift+K` anywhere on Sportlink to open/close the lookup dialog.
-- **🎯 Floating Launcher:** A discreet `🤽 WP Lookup` button in the bottom corner of `club.sportlink.com` for quick mouse access.
-- **🧩 Toolbar Popup:** Also works as an extension popup from the Chrome toolbar.
+- **📅 Automated Match Rescheduling Engine:**
+  - Pulls the entire division schedule via Sportlink's competition API (`CompetitionPoolSchedule`).
+  - **Weekend Rest Constraint:** Eliminates weekends where either team already plays a match (no back-to-back weekend doubleheaders).
+  - **Holiday Blackouts:** Excludes all Dutch school breaks and holiday weekends (*Herfstvakantie, Sinterklaas, Kerstvakantie, Voorjaarsvakantie, Pasen, Meivakantie, Pinksteren*).
+  - **Badwater Detection:** Automatically flags weekends where De Meeuwen already has pool time booked at *Weth. F.B. Duran*.
+- **💬 1-Click WhatsApp & Email Proposals:** Automatically formats a polite rescheduling proposal in Dutch with candidate dates, ready to send via WhatsApp Web or email.
+- **🩺 1-Click Diagnostics:** Click the **`v1.1.0`** badge in the modal header to instantly copy system diagnostics (URL, auth state, loaded teams) to clipboard for easy troubleshooting.
+- **⌨️ Universal Shortcuts:** Press **`Ctrl+Shift+K`** anywhere on Sportlink to toggle the spotlight modal, or use the discreet floating launcher button in the bottom-right corner.
 
 ---
 
-## 💻 Installing on a Chromebook
+## 💻 Installation (Chromebook & Chrome)
 
-Since Chrome extensions require the folder on the device:
+### Step 1: Download the Latest Release
+1. Go to the **[GitHub Releases Page](https://github.com/stmyers/sportlink-waterpolo-assistant/releases)**.
+2. Under the latest release, download **`sportlink-waterpolo-assistant.zip`**.
 
-### Step 1: Copy the extension folder to the Chromebook
-1. Copy or zip the `sportlink` folder:
-   - You can copy it to **Google Drive** or a **USB stick**, or email a `.zip` of this directory.
-2. On the Chromebook, open the **Files** app and place the folder in **My files** (or **Downloads**).
-   *(If you transferred a `.zip`, double-click to open it and drag the unzipped folder into Downloads)*.
+### Step 2: Unzip the Folder
+* **On a Chromebook:** Open the **Files** app, double-click the downloaded `.zip` file, and drag the extracted folder into **My files** (or **Downloads**).
+* **On Linux / Mac / Windows:** Right-click the `.zip` and extract it to a folder of your choice.
 
-### Step 2: Load into Chrome
-1. Open Google Chrome on the Chromebook.
-2. In the address bar, type:
+### Step 3: Load into Chrome
+1. In Google Chrome, navigate to:
    ```text
    chrome://extensions
    ```
-   and press **Enter**.
-3. In the top-right corner, toggle on **Developer mode**.
-4. In the top-left corner, click **Load unpacked**.
-5. Select the `sportlink` folder and click **Open**.
+2. In the top-right corner, enable **Developer mode**.
+3. In the top-left corner, click **Load unpacked**.
+4. Select the unzipped folder and click **Open**.
 
-The extension is now installed! You will see the **Sportlink Waterpolo Assistant** icon in the extensions list.
+The extension is now installed and ready!
 
 ---
 
 ## 🚀 How to Use It
 
 1. Log into [club.sportlink.com](https://club.sportlink.com).
-2. Press **`Ctrl+Shift+K`** (or click the floating **🤽 WP Lookup** button in the bottom-right corner).
-3. Type the club name and press **Enter** (or click a match).
-4. Click **Copy** next to the email or mobile, or click **Copy WhatsApp Summary** to share with your team!
+2. Press **`Ctrl+Shift+K`** (or click the floating **🤽 WP Assistant** button in the bottom-right corner).
+3. **Opponent Lookup:** Type any club name to view their water polo secretary contact, phone, and match pool.
+4. **Reschedule a Match:** 
+   - Click the **"📅 Reschedule Matches"** tab (or click **`[ 🔄 Reschedule ]`** directly on any scheduled head-to-head match).
+   - Select candidate dates from the conflict-free list.
+   - Click **`[ 📋 Kopieer WhatsApp Voorstel ]`** to paste the proposal directly into WhatsApp!
+
+---
+
+## 📦 How to Make Future Releases (Automated via GitHub Actions)
+
+Releases are **100% automated** using GitHub Actions. The workflow packages all extension files into a clean `.zip` asset, writes release notes, and publishes the release.
+
+### Method A: Via Git Tags (Terminal)
+Whenever you are ready to publish a new version:
+```bash
+# 1. Update "version" in manifest.json (e.g. 1.2.0)
+git commit -am "chore: Bump version to 1.2.0"
+git push origin main
+
+# 2. Tag and push the tag
+git tag v1.2.0
+git push origin v1.2.0
+```
+GitHub Actions will automatically build `dist/sportlink-waterpolo-assistant.zip` and publish **Release v1.2.0** on GitHub in ~15 seconds.
+
+### Method B: Via the GitHub Web UI (No Terminal Needed)
+1. Go to your repository on GitHub.
+2. Click the **Actions** tab.
+3. In the left sidebar, click **Release Extension**.
+4. Click **Run workflow**, enter the new tag name (e.g. `v1.2.0`), and click the green **Run workflow** button.
+
+---
+
+## 🩺 Debugging & Support
+
+If an error or edge case occurs:
+1. Click the grey **`v1.1.0`** badge in the modal header to copy system diagnostics.
+2. On a Chromebook, take a screenshot of the error with **`Ctrl + Shift + Show Windows`**.
+3. Open the Chrome Console with **`Ctrl + Shift + J`** to view any red network or JavaScript errors.
