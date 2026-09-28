@@ -177,7 +177,7 @@
         <div class="sl-wp-header">
           <div class="sl-wp-title">
             <span class="sl-wp-title-icon">🤽</span>
-            <span id="sl-wp-modal-title">Sportlink Waterpolo Assistant</span> <span id="sl-wp-header-version" style="font-size:11px;font-weight:normal;color:#94a3b8;cursor:pointer;padding:2px 6px;border-radius:4px;background:#f1f5f9;" title="Click to copy diagnostic info">v1.2.0</span>
+            <span id="sl-wp-modal-title">Sportlink Waterpolo Assistant</span> <span id="sl-wp-header-version" style="font-size:11px;font-weight:normal;color:#94a3b8;cursor:pointer;padding:2px 6px;border-radius:4px;background:#f1f5f9;" title="Click to copy diagnostic info">v1.2.1</span>
           </div>
           <button class="sl-wp-close-btn" id="sl-wp-close" title="Close (Esc)">✕</button>
         </div>
@@ -225,7 +225,7 @@
     if (verBtn) {
       verBtn.addEventListener('click', () => {
         const diag = {
-          version: '1.2.0',
+          version: '1.2.1',
           timestamp: new Date().toISOString(),
           url: window.location.href,
           hasToken: Boolean(getActiveToken()),
@@ -723,6 +723,7 @@
 
     const cleanOpponent = opponentClubName.toLowerCase().replace(/[^a-z0-9]/g, '');
     const matchedGames = [];
+    const seenH2HIds = new Set();
 
     // Check pools for each team
     for (const team of teams) {
@@ -731,6 +732,9 @@
         if (!comp.PublicPoolId) continue;
         const poolMatches = await getPoolSchedule(comp.PublicPoolId);
         poolMatches.forEach((m) => {
+          const matchId = m.InternalMatchId || m.ExternalMatchId || `${m.HomeTeamName}_${m.AwayTeamName}_${m.MatchDate}`;
+          if (seenH2HIds.has(matchId)) return;
+
           const home = (m.HomeTeamName || '').toLowerCase().replace(/[^a-z0-9]/g, '');
           const away = (m.AwayTeamName || '').toLowerCase().replace(/[^a-z0-9]/g, '');
 
@@ -740,6 +744,7 @@
           const isOpponent = home.includes(cleanOpponent) || away.includes(cleanOpponent);
 
           if ((isHomeMeeuwen || isAwayMeeuwen) && isOpponent) {
+            seenH2HIds.add(matchId);
             matchedGames.push({ match: m, poolId: comp.PublicPoolId, teamName: team.name });
           }
         });
@@ -840,14 +845,26 @@
       </div>
     `;
 
+    const selectedTeam = deMeeuwenTeams.find((t) => t.teamId === teamId);
+    const targetTeamName = selectedTeam ? selectedTeam.name : '';
+    const normTargetName = targetTeamName.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const targetTeamCode = targetTeamName.replace(/de\s*meeuwen\s*(diemen)?/gi, '').trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+
     const comps = await getTeamCompetitions(teamId);
     let allMatches = [];
+    const seenMatchIds = new Set();
 
     for (const c of comps) {
       if (!c.PublicPoolId) continue;
       const matches = await getPoolSchedule(c.PublicPoolId);
       matches.forEach((m) => {
-        allMatches.push({ match: m, poolId: c.PublicPoolId, compDesc: c.ClassDescription || c.CompetitionTypeName });
+        const matchId = m.InternalMatchId || m.ExternalMatchId || `${m.HomeTeamName}_${m.AwayTeamName}_${m.MatchDate}`;
+        if (seenMatchIds.has(matchId)) return;
+
+        if (isMatchForTeam(m, teamId, targetTeamName, normTargetName, targetTeamCode)) {
+          seenMatchIds.add(matchId);
+          allMatches.push({ match: m, poolId: c.PublicPoolId, compDesc: c.ClassDescription || c.CompetitionTypeName });
+        }
       });
     }
 
@@ -859,7 +876,7 @@
     });
 
     if (allMatches.length === 0) {
-      container.innerHTML = `<div style="color: #64748b; padding: 10px;">No scheduled matches found for this team.</div>`;
+      container.innerHTML = `<div style="color: #64748b; padding: 10px;">Geen wedstrijden gevonden voor dit team.</div>`;
       return;
     }
 
@@ -894,6 +911,44 @@
         startRescheduleFlow(match, poolId);
       });
     });
+  }
+
+  function isMatchForTeam(m, teamId, targetTeamName, normTargetName, targetTeamCode) {
+    if (!m) return false;
+
+    // 1. Direct ID match if present on match object
+    const homeTeamId = m.HomeTeamId || m.PublicHomeTeamId || m.HomePublicTeamId;
+    const awayTeamId = m.AwayTeamId || m.PublicAwayTeamId || m.AwayPublicTeamId;
+    if (teamId && (homeTeamId === teamId || awayTeamId === teamId)) {
+      return true;
+    }
+
+    // 2. Exact team name match
+    if (targetTeamName && (m.HomeTeamName === targetTeamName || m.AwayTeamName === targetTeamName)) {
+      return true;
+    }
+
+    const homeNorm = (m.HomeTeamName || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    const awayNorm = (m.AwayTeamName || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+
+    // 3. Normalized full name match
+    if (normTargetName && (homeNorm === normTargetName || awayNorm === normTargetName)) {
+      return true;
+    }
+
+    // 4. Team suffix/code matching within De Meeuwen (e.g. 'da2', 'h1', 'bm1')
+    if (targetTeamCode) {
+      if (homeNorm.includes('meeuwen')) {
+        const homeCode = (m.HomeTeamName || '').replace(/de\s*meeuwen\s*(diemen)?/gi, '').trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+        if (homeCode === targetTeamCode) return true;
+      }
+      if (awayNorm.includes('meeuwen')) {
+        const awayCode = (m.AwayTeamName || '').replace(/de\s*meeuwen\s*(diemen)?/gi, '').trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+        if (awayCode === targetTeamCode) return true;
+      }
+    }
+
+    return false;
   }
 
   // --- Reschedule Slot Finder Engine ---
