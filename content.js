@@ -177,7 +177,7 @@
         <div class="sl-wp-header">
           <div class="sl-wp-title">
             <span class="sl-wp-title-icon">🤽</span>
-            <span id="sl-wp-modal-title">Sportlink Waterpolo Assistant</span> <span id="sl-wp-header-version" style="font-size:11px;font-weight:normal;color:#94a3b8;cursor:pointer;padding:2px 6px;border-radius:4px;background:#f1f5f9;" title="Click to copy diagnostic info">v1.1.1</span>
+            <span id="sl-wp-modal-title">Sportlink Waterpolo Assistant</span> <span id="sl-wp-header-version" style="font-size:11px;font-weight:normal;color:#94a3b8;cursor:pointer;padding:2px 6px;border-radius:4px;background:#f1f5f9;" title="Click to copy diagnostic info">v1.2.0</span>
           </div>
           <button class="sl-wp-close-btn" id="sl-wp-close" title="Close (Esc)">✕</button>
         </div>
@@ -225,7 +225,7 @@
     if (verBtn) {
       verBtn.addEventListener('click', () => {
         const diag = {
-          version: '1.1.1',
+          version: '1.2.0',
           timestamp: new Date().toISOString(),
           url: window.location.href,
           hasToken: Boolean(getActiveToken()),
@@ -913,13 +913,9 @@
     const teamA = targetMatch.HomeTeamName;
     const teamB = targetMatch.AwayTeamName;
 
-    // 3. Collect busy dates & weekends for Team A and Team B
-    const busyDatesA = new Set();
-    const busyDatesB = new Set();
-    const busyWeekendsA = new Set();
-    const busyWeekendsB = new Set();
-
-    // Map of dates where De Meeuwen has ANY home game in Duran
+    // 3. Collect busy dates for Team A and Team B
+    const busyDatesA = new Map();
+    const busyDatesB = new Map();
     const deMeeuwenDuranDates = new Set();
 
     allPoolMatches.forEach((m) => {
@@ -930,15 +926,13 @@
       const d = m.MatchDate; // YYYY-MM-DD
       if (!d) return;
 
-      const weekendId = getWeekendId(d);
-
       if (m.HomeTeamName === teamA || m.AwayTeamName === teamA) {
-        busyDatesA.add(d);
-        busyWeekendsA.add(weekendId);
+        const opponent = m.HomeTeamName === teamA ? m.AwayTeamName : m.HomeTeamName;
+        busyDatesA.set(d, { ...m, opponent });
       }
       if (m.HomeTeamName === teamB || m.AwayTeamName === teamB) {
-        busyDatesB.add(d);
-        busyWeekendsB.add(weekendId);
+        const opponent = m.HomeTeamName === teamB ? m.AwayTeamName : m.HomeTeamName;
+        busyDatesB.set(d, { ...m, opponent });
       }
 
       // Check home pool Duran
@@ -947,7 +941,7 @@
       }
     });
 
-    // 4. Generate all weekends from today until end of season (May 31, 2027)
+    // 4. Generate candidate dates from today until end of season (May 31, 2027)
     const startDate = new Date();
     // Round forward to next Saturday
     const dayOfWeek = startDate.getDay();
@@ -955,7 +949,6 @@
     startDate.setDate(startDate.getDate() + daysUntilSaturday);
 
     const endDate = new Date('2027-06-01');
-
     const availableSlots = [];
     const currentDate = new Date(startDate);
 
@@ -965,23 +958,61 @@
       sunDate.setDate(sunDate.getDate() + 1);
       const sunStr = formatDateISO(sunDate);
 
-      const weekendId = getWeekendId(satStr);
-
-      // Check Rule 1: Blackout dates
       const isSatBlackout = isDateInBlackout(satStr);
       const isSunBlackout = isDateInBlackout(sunStr);
 
-      // Check Rule 2: Weekend rest constraint (no games on Sat or Sun for either team)
-      const isTeamABusy = busyWeekendsA.has(weekendId) || busyDatesA.has(satStr) || busyDatesA.has(sunStr);
-      const isTeamBBusy = busyWeekendsB.has(weekendId) || busyDatesB.has(satStr) || busyDatesB.has(sunStr);
+      const teamAPlaysSat = busyDatesA.has(satStr);
+      const teamBPlaysSat = busyDatesB.has(satStr);
+      const teamAPlaysSun = busyDatesA.has(sunStr);
+      const teamBPlaysSun = busyDatesB.has(sunStr);
 
-      if (!isSatBlackout && !isSunBlackout && !isTeamABusy && !isTeamBBusy) {
-        const hasDuranPool = deMeeuwenDuranDates.has(satStr);
+      // --- Option 1: Saturday ---
+      if (!isSatBlackout && !teamAPlaysSat && !teamBPlaysSat) {
+        let warning = null;
+        if (teamAPlaysSun && teamBPlaysSun) {
+          warning = '⚠️ Beide teams spelen al op zondag';
+        } else if (teamAPlaysSun) {
+          const opp = busyDatesA.get(sunStr).opponent;
+          warning = `⚠️ Meeuwen speelt al op zo (${opp})`;
+        } else if (teamBPlaysSun) {
+          const opp = busyDatesB.get(sunStr).opponent;
+          warning = `⚠️ Tegenstander speelt al op zo (${opp})`;
+        }
+
         availableSlots.push({
-          satDate: satStr,
-          sunDate: sunStr,
+          date: satStr,
+          day: 'Za',
           formattedDate: formatDutchDate(satStr),
-          hasDuranPool
+          isSaturday: true,
+          hasDuranPool: deMeeuwenDuranDates.has(satStr),
+          warning: warning,
+          hasWarning: Boolean(warning),
+          isCleanWeekend: !warning
+        });
+      }
+
+      // --- Option 2: Sunday ---
+      if (!isSunBlackout && !teamAPlaysSun && !teamBPlaysSun) {
+        let warning = null;
+        if (teamAPlaysSat && teamBPlaysSat) {
+          warning = '⚠️ Beide teams spelen al op zaterdag';
+        } else if (teamAPlaysSat) {
+          const opp = busyDatesA.get(satStr).opponent;
+          warning = `⚠️ Meeuwen speelt al op za (${opp})`;
+        } else if (teamBPlaysSat) {
+          const opp = busyDatesB.get(satStr).opponent;
+          warning = `⚠️ Tegenstander speelt al op za (${opp})`;
+        }
+
+        availableSlots.push({
+          date: sunStr,
+          day: 'Zo',
+          formattedDate: formatDutchDate(sunStr),
+          isSaturday: false,
+          hasDuranPool: deMeeuwenDuranDates.has(sunStr),
+          warning: warning,
+          hasWarning: Boolean(warning),
+          isCleanWeekend: !warning
         });
       }
 
@@ -994,6 +1025,34 @@
 
   function renderRescheduleResults(match, slots) {
     const body = document.getElementById('sl-wp-body');
+
+    const cleanSlots = slots.filter((s) => s.isCleanWeekend);
+    const satSlots = slots.filter((s) => s.isSaturday);
+
+    // Pre-check up to 3 cleanest options
+    let precheckedCount = 0;
+    slots.forEach((s) => {
+      if (s.isCleanWeekend && s.isSaturday && precheckedCount < 3) {
+        s.defaultChecked = true;
+        precheckedCount++;
+      }
+    });
+    if (precheckedCount < 3) {
+      slots.forEach((s) => {
+        if (s.isCleanWeekend && !s.defaultChecked && precheckedCount < 3) {
+          s.defaultChecked = true;
+          precheckedCount++;
+        }
+      });
+    }
+    if (precheckedCount < 3) {
+      slots.forEach((s) => {
+        if (!s.defaultChecked && precheckedCount < 3) {
+          s.defaultChecked = true;
+          precheckedCount++;
+        }
+      });
+    }
 
     let html = `
       <div class="sl-wp-reschedule-view">
@@ -1017,38 +1076,51 @@
         </div>
 
         <div class="sl-wp-free-slots-header">
-          <span>✨ ${slots.length} Conflict-Free Weekends Found:</span>
+          <span>✨ ${slots.length} Mogelijke Speeldagen Gevonden:</span>
         </div>
-        <div style="font-size:12px;color:#64748b;margin-top:-8px;margin-bottom:8px;">
+        <div style="font-size:12px;color:#64748b;margin-top:-8px;margin-bottom:10px;">
           ✓ Excluded holiday blackouts (Meivakantie, Kerst, Pasen, etc.)<br>
-          ✓ Excluded entire weekends where either team already plays a match.
+          ✓ Excluded dates with same-day match conflicts.<br>
+          ℹ️ Dates with another match on the same weekend are included with a warning.
+        </div>
+
+        <div class="sl-wp-filter-pills">
+          <button class="sl-wp-filter-pill sl-wp-filter-active" data-filter="all">Alle opties (${slots.length})</button>
+          <button class="sl-wp-filter-pill" data-filter="clean">100% Vrij weekend (${cleanSlots.length})</button>
+          <button class="sl-wp-filter-pill" data-filter="saturday">Alleen zaterdagen (${satSlots.length})</button>
         </div>
     `;
 
     if (slots.length === 0) {
       html += `
         <div style="background:#fffbeb;padding:16px;border-radius:8px;color:#92400e;font-size:13px;">
-          No completely open weekends found without conflicts. Try consulting the pool manager directly.
+          No open dates found without same-day conflicts. Try consulting the pool manager directly.
         </div>
       `;
     } else {
-      html += `<div style="display:flex;flex-direction:column;gap:6px;max-height:220px;overflow-y:auto;">`;
+      html += `<div id="sl-wp-slots-list" style="display:flex;flex-direction:column;gap:6px;max-height:220px;overflow-y:auto;">`;
 
-      slots.slice(0, 10).forEach((slot, idx) => {
-        const checked = idx < 3 ? 'checked' : '';
+      slots.forEach((slot) => {
+        const checked = slot.defaultChecked ? 'checked' : '';
         html += `
-          <label class="sl-wp-slot-item ${slot.hasDuranPool ? 'sl-wp-home-pool' : ''}" style="cursor:pointer;">
+          <label class="sl-wp-slot-item ${slot.hasWarning ? 'sl-wp-slot-warning' : (slot.hasDuranPool ? 'sl-wp-home-pool' : '')}"
+                 data-clean="${slot.isCleanWeekend}" data-sat="${slot.isSaturday}" style="cursor:pointer;">
             <div style="display:flex;align-items:center;gap:10px;">
               <input type="checkbox" class="sl-wp-slot-check" value="${slot.formattedDate}" ${checked} />
               <div>
                 <div class="sl-wp-slot-date">📅 ${slot.formattedDate}</div>
-                <div style="font-size:11px;color:#64748b;">(Zaterdag of Zondag vrij)</div>
+                <div style="font-size:11px;color:${slot.hasWarning ? '#b45309' : '#15803d'};">
+                  ${slot.hasWarning ? escapeHtml(slot.warning) : '✓ Heel weekend vrij voor beide teams'}
+                </div>
               </div>
             </div>
             <div>
               ${slot.hasDuranPool
-                ? `<span class="sl-wp-slot-badge sl-wp-badge-pool">⭐ Badwater Duran aanwezig</span>`
-                : `<span class="sl-wp-slot-badge sl-wp-badge-free">✅ Beide teams vrij</span>`
+                ? `<span class="sl-wp-slot-badge sl-wp-badge-pool">⭐ Badwater Duran</span>`
+                : (slot.hasWarning
+                    ? `<span class="sl-wp-slot-badge sl-wp-badge-warning">⚠️ Dubbel weekend</span>`
+                    : `<span class="sl-wp-slot-badge sl-wp-badge-free">✅ 100% Vrij</span>`
+                  )
               }
             </div>
           </label>
@@ -1090,6 +1162,24 @@
         }
       });
     }
+
+    // Filter pills listeners
+    body.querySelectorAll('.sl-wp-filter-pill').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        body.querySelectorAll('.sl-wp-filter-pill').forEach((b) => b.classList.remove('sl-wp-filter-active'));
+        btn.classList.add('sl-wp-filter-active');
+        const filter = btn.dataset.filter;
+        body.querySelectorAll('.sl-wp-slot-item').forEach((item) => {
+          if (filter === 'all') {
+            item.style.display = 'flex';
+          } else if (filter === 'clean') {
+            item.style.display = item.dataset.clean === 'true' ? 'flex' : 'none';
+          } else if (filter === 'saturday') {
+            item.style.display = item.dataset.sat === 'true' ? 'flex' : 'none';
+          }
+        });
+      });
+    });
 
     function updateProposalText() {
       const selectedDates = [];

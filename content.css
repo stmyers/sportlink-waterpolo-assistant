@@ -619,6 +619,11 @@
   border-left: 4px solid #10b981;
 }
 
+.sl-wp-slot-item.sl-wp-slot-warning {
+  border-left: 4px solid #f59e0b;
+  background: #fffdfa;
+}
+
 .sl-wp-slot-date {
   font-weight: 600;
   font-size: 14px;
@@ -640,6 +645,41 @@
 .sl-wp-badge-pool {
   background: #e0f2fe;
   color: #0369a1;
+}
+
+.sl-wp-badge-warning {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.sl-wp-filter-pills {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.sl-wp-filter-pill {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #475569;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.sl-wp-filter-pill:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.sl-wp-filter-pill.sl-wp-filter-active {
+  background: #0284c7;
+  border-color: #0284c7;
+  color: #ffffff;
 }
 
 .sl-wp-proposal-box {
